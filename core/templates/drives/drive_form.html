@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - Placement Drive Management System{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-9">
+    <div class="card p-4 shadow-sm">
+      <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom">
+        <a href="{% url 'drive_list' %}" class="btn btn-outline-secondary btn-sm px-3 fw-semibold">
+          <i class="bi bi-arrow-left me-1"></i> Back to Drives
+        </a>
+        <h5 class="fw-bold text-dark m-0">{{ title }}</h5>
+      </div>
+
+      <form method="post">
+        {% csrf_token %}
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Select Company *</label>
+            {{ form.company }}
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Job Title / Role *</label>
+            {{ form.title }}
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">Package (LPA) *</label>
+            {{ form.package_lpa }}
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">Drive Date *</label>
+            {{ form.drive_date }}
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">Application Deadline *</label>
+            {{ form.deadline }}
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">Vacancies</label>
+            {{ form.vacancies }}
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">Minimum CGPA Required</label>
+            {{ form.min_cgpa }}
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">Maximum Allowed Backlogs</label>
+            {{ form.max_backlogs }}
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Allowed Departments (Comma Separated)</label>
+            {{ form.allowed_departments }}
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Required Skills (Comma Separated)</label>
+            {{ form.required_skills }}
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label fw-semibold">Target Graduation Year</label>
+            {{ form.target_graduation_year }}
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label fw-semibold">Drive Status</label>
+            {{ form.status }}
+          </div>
+
+          <div class="col-12">
+            <label class="form-label fw-semibold">Job Description & Responsibilities</label>
+            {{ form.job_description }}
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+          <a href="{% url 'drive_list' %}" class="btn btn-light border px-4 fw-medium">Cancel</a>
+          <button type="submit" class="btn btn-primary px-4 fw-bold shadow-sm">Save Drive</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

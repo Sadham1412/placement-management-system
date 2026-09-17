@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block title %}Placement Drives - Placement Drive Management System{% endblock %}
+{% block page_title %}Placement Drives{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+  <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary btn-sm px-3 fw-semibold">
+    <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+  </a>
+</div>
+
+<!-- Search & Filter Controls -->
+<div class="card p-3 mb-4">
+  <div class="row g-3 align-items-center justify-content-between">
+    <div class="col-md-8">
+      <form method="get" action="{% url 'drive_list' %}" class="row g-2">
+        <div class="col-md-6">
+          <div class="input-group">
+            <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+            <input type="text" name="q" value="{{ search_query }}" class="form-control border-start-0 ps-0" placeholder="Search by role or company...">
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <select name="status" class="form-select">
+            <option value="">All Status</option>
+            <option value="Active" {% if status_filter == 'Active' %}selected{% endif %}>Active</option>
+            <option value="Upcoming" {% if status_filter == 'Upcoming' %}selected{% endif %}>Upcoming</option>
+            <option value="Closed" {% if status_filter == 'Closed' %}selected{% endif %}>Closed</option>
+          </select>
+        </div>
+
+        <div class="col-md-2">
+          <button type="submit" class="btn btn-primary w-100 fw-semibold">Filter</button>
+        </div>
+      </form>
+    </div>
+
+    {% if user.is_staff %}
+    <div class="col-md-auto">
+      <a href="{% url 'add_drive' %}" class="btn btn-primary fw-semibold">
+        <i class="bi bi-plus-lg me-1"></i> Add Drive
+      </a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Placement Drives Table (Matching Screen 9) -->
+<div class="card p-3">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle m-0">
+      <thead class="table-light">
+        <tr>
+          <th>Company</th>
+          <th>Job Role</th>
+          <th>Package</th>
+          <th>Deadline</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for drive in drives %}
+        <tr>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <div class="bg-primary bg-opacity-10 text-primary fw-bold rounded-3 p-2 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+                {{ drive.company.name|slice:":2"|upper }}
+              </div>
+              <div>
+                <div class="fw-bold text-dark mb-0">{{ drive.company.name }}</div>
+                <div class="small text-muted"><i class="bi bi-geo-alt me-1"></i> {{ drive.company.location }}</div>
+              </div>
+            </div>
+          </td>
+          <td class="fw-bold text-dark">{{ drive.title }}</td>
+          <td class="text-primary fw-bold">{{ drive.package_lpa }} LPA</td>
+          <td class="small text-muted">{{ drive.deadline|date:"d M Y" }}</td>
+          <td>
+            {% if drive.status == 'Active' %}
+              <span class="badge badge-status badge-active">Active</span>
+            {% elif drive.status == 'Upcoming' %}
+              <span class="badge badge-status badge-upcoming">Upcoming</span>
+            {% else %}
+              <span class="badge badge-status badge-closed">Closed</span>
+            {% endif %}
+          </td>
+          <td>
+            <div class="d-flex gap-2">
+              <a href="{% url 'drive_detail' drive.pk %}" class="btn btn-sm btn-primary px-3 fw-medium">
+                View
+              </a>
+              {% if not user.is_staff %}
+                <a href="{% url 'check_eligibility' drive.pk %}" class="btn btn-sm btn-outline-success fw-medium">
+                  Apply / Check
+                </a>
+              {% endif %}
+
+              {% if user.is_staff %}
+                <a href="{% url 'edit_drive' drive.pk %}" class="btn btn-sm btn-outline-secondary" title="Edit Drive">
+                  <i class="bi bi-pencil"></i>
+                </a>
+                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-bs-delete-url="{% url 'delete_drive' drive.pk %}" data-bs-item-name="{{ drive.title }}">
+                  <i class="bi bi-trash"></i>
+                </button>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" class="text-center text-muted py-4">No placement drives found.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: placement-management-system
+    runtime: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn placement_system.wsgi:application"
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: "False"
+      - key: DJANGO_ALLOWED_HOSTS
+        value: "placement-management-system.onrender.com"
+      - key: DJANGO_CSRF_TRUSTED_ORIGINS
+        value: "https://placement-management-system.onrender.com"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: placement-management-db
+          property: connectionString
+
+databases:
+  - name: placement-management-db
+    databaseName: placement_db
+    user: placement_user

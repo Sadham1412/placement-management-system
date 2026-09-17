@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+
+{% block title %}Eligibility Check - {{ drive.title }}{% endblock %}
+{% block page_title %}Eligibility Check (Student){% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+
+    <div class="mb-3">
+      <a href="{% url 'drive_detail' drive.pk %}" class="btn btn-outline-secondary btn-sm px-3 fw-semibold">
+        <i class="bi bi-arrow-left me-1"></i> Back to Drive Details
+      </a>
+    </div>
+
+    <!-- Overall Result Header Banner -->
+    {% if is_eligible %}
+      <div class="card p-4 mb-4 border-0 bg-success bg-opacity-10 text-success text-center shadow-sm">
+        <div class="mx-auto mb-2 bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
+          <i class="bi bi-check-lg fs-2"></i>
+        </div>
+        <h4 class="fw-bold mb-1">You are Eligible for this placement drive!</h4>
+        <p class="small text-success text-opacity-75 m-0">You meet all academic and criteria requirements for {{ drive.title }} at {{ drive.company.name }}.</p>
+      </div>
+    {% else %}
+      <div class="card p-4 mb-4 border-0 bg-danger bg-opacity-10 text-danger text-center shadow-sm">
+        <div class="mx-auto mb-2 bg-danger text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
+          <i class="bi bi-x-lg fs-2"></i>
+        </div>
+        <h4 class="fw-bold mb-1">You are Not Eligible for this placement drive</h4>
+        <p class="small text-danger text-opacity-75 m-0">One or more of your profile criteria do not meet the drive requirements.</p>
+      </div>
+    {% endif %}
+
+    <!-- Requirement Checklist Card -->
+    <div class="card p-4 mb-4 shadow-sm">
+      <h5 class="fw-bold text-dark mb-3">Eligibility Requirement Breakdown</h5>
+
+      <div class="list-group list-group-flush">
+        <!-- 1. CGPA Check -->
+        <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+          <div class="d-flex align-items-center gap-3">
+            <div class="icon-box {% if cgpa_pass %}success{% else %}danger{% endif %}" style="width: 38px; height: 38px;">
+              <i class="bi {% if cgpa_pass %}bi-check-circle{% else %}bi-x-circle{% endif %}"></i>
+            </div>
+            <div>
+              <div class="fw-bold text-dark mb-0">CGPA Requirement</div>
+              <div class="small text-muted">Required: {{ drive.min_cgpa }} | Yours: <strong>{{ student.cgpa }}</strong></div>
+            </div>
+          </div>
+          {% if cgpa_pass %}
+            <span class="badge bg-success px-3 py-2"><i class="bi bi-check-lg me-1"></i> Passed</span>
+          {% else %}
+            <span class="badge bg-danger px-3 py-2"><i class="bi bi-x-lg me-1"></i> Failed</span>
+          {% endif %}
+        </div>
+
+        <!-- 2. Backlog Check -->
+        <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+          <div class="d-flex align-items-center gap-3">
+            <div class="icon-box {% if backlog_pass %}success{% else %}danger{% endif %}" style="width: 38px; height: 38px;">
+              <i class="bi {% if backlog_pass %}bi-check-circle{% else %}bi-x-circle{% endif %}"></i>
+            </div>
+            <div>
+              <div class="fw-bold text-dark mb-0">Backlog Requirement</div>
+              <div class="small text-muted">Max Allowed: {{ drive.max_backlogs }} | Yours: <strong>{{ student.backlogs }}</strong></div>
+            </div>
+          </div>
+          {% if backlog_pass %}
+            <span class="badge bg-success px-3 py-2"><i class="bi bi-check-lg me-1"></i> Passed</span>
+          {% else %}
+            <span class="badge bg-danger px-3 py-2"><i class="bi bi-x-lg me-1"></i> Failed</span>
+          {% endif %}
+        </div>
+
+        <!-- 3. Department Check -->
+        <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+          <div class="d-flex align-items-center gap-3">
+            <div class="icon-box {% if dept_pass %}success{% else %}danger{% endif %}" style="width: 38px; height: 38px;">
+              <i class="bi {% if dept_pass %}bi-check-circle{% else %}bi-x-circle{% endif %}"></i>
+            </div>
+            <div>
+              <div class="fw-bold text-dark mb-0">Department Requirement</div>
+              <div class="small text-muted">Allowed: {{ drive.allowed_departments }} | Yours: <strong>{{ student.department }}</strong></div>
+            </div>
+          </div>
+          {% if dept_pass %}
+            <span class="badge bg-success px-3 py-2"><i class="bi bi-check-lg me-1"></i> Passed</span>
+          {% else %}
+            <span class="badge bg-danger px-3 py-2"><i class="bi bi-x-lg me-1"></i> Failed</span>
+          {% endif %}
+        </div>
+
+        <!-- 4. Graduation Year Check -->
+        <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+          <div class="d-flex align-items-center gap-3">
+            <div class="icon-box {% if grad_pass %}success{% else %}danger{% endif %}" style="width: 38px; height: 38px;">
+              <i class="bi {% if grad_pass %}bi-check-circle{% else %}bi-x-circle{% endif %}"></i>
+            </div>
+            <div>
+              <div class="fw-bold text-dark mb-0">Graduation Year Requirement</div>
+              <div class="small text-muted">Target Year: {{ drive.target_graduation_year }} | Yours: <strong>{{ student.graduation_year }}</strong></div>
+            </div>
+          </div>
+          {% if grad_pass %}
+            <span class="badge bg-success px-3 py-2"><i class="bi bi-check-lg me-1"></i> Passed</span>
+          {% else %}
+            <span class="badge bg-danger px-3 py-2"><i class="bi bi-x-lg me-1"></i> Failed</span>
+          {% endif %}
+        </div>
+
+        <!-- 5. Required Skills Check -->
+        <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+          <div class="d-flex align-items-center gap-3">
+            <div class="icon-box {% if skills_pass %}success{% else %}danger{% endif %}" style="width: 38px; height: 38px;">
+              <i class="bi {% if skills_pass %}bi-check-circle{% else %}bi-x-circle{% endif %}"></i>
+            </div>
+            <div>
+              <div class="fw-bold text-dark mb-0">Skills & Technical Requirements</div>
+              <div class="small text-muted">Required: <span class="badge bg-secondary bg-opacity-10 text-secondary">{{ drive.required_skills }}</span> | Yours: <strong>{{ student.skills|default:"None listed" }}</strong></div>
+            </div>
+          </div>
+          {% if skills_pass %}
+            <span class="badge bg-success px-3 py-2"><i class="bi bi-check-lg me-1"></i> Passed</span>
+          {% else %}
+            <span class="badge bg-danger px-3 py-2"><i class="bi bi-x-lg me-1"></i> Failed</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Bar -->
+    <div class="d-flex justify-content-between align-items-center">
+      <a href="{% url 'drive_detail' drive.pk %}" class="btn btn-light border fw-medium px-4">Back to Drive Details</a>
+
+      {% if is_eligible %}
+        {% if already_applied %}
+          <button class="btn btn-success fw-bold px-4 disabled">Already Applied</button>
+        {% else %}
+          <a href="{% url 'apply_drive' drive.pk %}" class="btn btn-primary fw-bold px-5 py-2 shadow-sm">
+            <i class="bi bi-send-fill me-2"></i> Apply Now
+          </a>
+        {% endif %}
+      {% else %}
+        <button class="btn btn-secondary fw-medium px-4 disabled">Cannot Apply (Not Eligible)</button>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}

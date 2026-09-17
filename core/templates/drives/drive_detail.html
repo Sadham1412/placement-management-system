@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ drive.title }} at {{ drive.company.name }} - Placement Drive Details{% endblock %}
+{% block page_title %}Placement Drive Details{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+  <a href="{% url 'drive_list' %}" class="btn btn-outline-secondary btn-sm px-3 fw-semibold">
+    <i class="bi bi-arrow-left me-1"></i> Back to Drives List
+  </a>
+</div>
+
+<!-- Top Header Card -->
+<div class="card p-4 mb-4">
+  <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+    <div class="d-flex align-items-center gap-3">
+      <div class="bg-primary text-white rounded-3 p-3 d-flex align-items-center justify-content-center fw-bold fs-3" style="width: 60px; height: 60px;">
+        {{ drive.company.name|slice:":2"|upper }}
+      </div>
+      <div>
+        <h4 class="fw-bold text-dark mb-1">{{ drive.company.name }}</h4>
+        <div class="text-muted small">
+          <i class="bi bi-briefcase me-1"></i> {{ drive.company.industry }} | 
+          <i class="bi bi-geo-alt me-1"></i> {{ drive.company.location }} | 
+          <a href="{{ drive.company.website }}" target="_blank" class="text-primary text-decoration-none"><i class="bi bi-globe me-1"></i> Website</a>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      {% if drive.status == 'Active' %}
+        <span class="badge badge-status badge-active fs-6 px-3 py-2">Eligible for Applications</span>
+      {% else %}
+        <span class="badge badge-status badge-closed fs-6 px-3 py-2">{{ drive.status }}</span>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Overview Metric Badges Grid -->
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <div class="card p-3 border-0 bg-white">
+      <div class="text-muted small fw-semibold">Job Role</div>
+      <div class="fw-bold text-dark fs-5">{{ drive.title }}</div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card p-3 border-0 bg-white">
+      <div class="text-muted small fw-semibold">Package</div>
+      <div class="fw-bold text-primary fs-5">₹{{ drive.package_lpa }} LPA</div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card p-3 border-0 bg-white">
+      <div class="text-muted small fw-semibold">Drive Date</div>
+      <div class="fw-bold text-dark fs-6">{{ drive.drive_date|date:"d M Y" }}</div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card p-3 border-0 bg-white">
+      <div class="text-muted small fw-semibold">Deadline</div>
+      <div class="fw-bold text-danger fs-6">{{ drive.deadline|date:"d M Y" }}</div>
+    </div>
+  </div>
+</div>
+
+<!-- Details & Eligibility Grid -->
+<div class="row g-4 mb-4">
+  <!-- Left Side: Job Description -->
+  <div class="col-lg-8">
+    <div class="card p-4 h-100">
+      <h5 class="fw-bold text-dark mb-3">Job Description</h5>
+      <p class="text-dark small lh-lg mb-4">{{ drive.job_description|linebreaksbr }}</p>
+
+      <h5 class="fw-bold text-dark mb-3">About {{ drive.company.name }}</h5>
+      <p class="text-muted small lh-lg m-0">{{ drive.company.description|linebreaksbr|default:"No company description provided." }}</p>
+    </div>
+  </div>
+
+  <!-- Right Side: Eligibility Criteria Card -->
+  <div class="col-lg-4">
+    <div class="card p-4 bg-light border">
+      <h5 class="fw-bold text-dark mb-3"><i class="bi bi-shield-check text-primary me-2"></i> Eligibility Criteria</h5>
+
+      <ul class="list-group list-group-flush bg-transparent mb-4">
+        <li class="list-group-item bg-transparent d-flex justify-content-between px-0 py-2">
+          <span class="text-muted small">Minimum CGPA:</span>
+          <span class="fw-bold text-dark">{{ drive.min_cgpa }}</span>
+        </li>
+        <li class="list-group-item bg-transparent d-flex justify-content-between px-0 py-2">
+          <span class="text-muted small">Max Backlogs:</span>
+          <span class="fw-bold text-dark">{{ drive.max_backlogs }}</span>
+        </li>
+        <li class="list-group-item bg-transparent d-flex justify-content-between px-0 py-2">
+          <span class="text-muted small">Departments:</span>
+          <span class="fw-bold text-primary text-end">{{ drive.allowed_departments }}</span>
+        </li>
+        <li class="list-group-item bg-transparent d-flex justify-content-between px-0 py-2">
+          <span class="text-muted small">Graduation Year:</span>
+          <span class="fw-bold text-dark">{{ drive.target_graduation_year }}</span>
+        </li>
+        <li class="list-group-item bg-transparent d-flex justify-content-between px-0 py-2">
+          <span class="text-muted small">Required Skills:</span>
+          <span class="fw-bold text-success text-end">{{ drive.required_skills }}</span>
+        </li>
+        <li class="list-group-item bg-transparent d-flex justify-content-between px-0 py-2">
+          <span class="text-muted small">Vacancies:</span>
+          <span class="fw-bold text-dark">{{ drive.vacancies }} Positions</span>
+        </li>
+      </ul>
+
+      <!-- Action Button -->
+      {% if not user.is_staff %}
+        {% if already_applied %}
+          <div class="alert alert-info text-center m-0 py-2 small fw-bold">
+            <i class="bi bi-check-circle-fill me-1"></i> Applied (Status: {{ application.status }})
+          </div>
+        {% else %}
+          <a href="{% url 'check_eligibility' drive.pk %}" class="btn btn-primary w-100 py-2 fw-bold shadow-sm">
+            Check Eligibility & Apply
+          </a>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

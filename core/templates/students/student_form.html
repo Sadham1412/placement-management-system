@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Profile - Placement Drive Management System{% endblock %}
+{% block page_title %}Edit Student Profile{% endblock %}
+
+{% block content %}
+<div class="card p-4">
+  <div class="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom">
+    <div class="d-flex align-items-center gap-3">
+      <a href="{% if user.is_staff %}{% url 'student_list' %}{% else %}{% url 'my_profile' %}{% endif %}" class="btn btn-outline-secondary btn-sm px-3 fw-semibold">
+        <i class="bi bi-arrow-left me-1"></i> Back
+      </a>
+      <h5 class="fw-bold text-dark m-0">Update Profile Information</h5>
+    </div>
+  </div>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="row g-3">
+      <div class="col-md-4">
+        <label class="form-label fw-semibold">First Name</label>
+        {{ form.first_name }}
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label fw-semibold">Last Name</label>
+        {{ form.last_name }}
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label fw-semibold">Email</label>
+        {{ form.email }}
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label fw-semibold">Phone</label>
+        {{ form.phone }}
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label fw-semibold">Gender</label>
+        {{ form.gender }}
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label fw-semibold">Date of Birth</label>
+        {{ form.date_of_birth }}
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label fw-semibold">Department</label>
+        {{ form.department }}
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label fw-semibold">College</label>
+        {{ form.college }}
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label fw-semibold">Graduation Year</label>
+        {{ form.graduation_year }}
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">CGPA</label>
+        {{ form.cgpa }}
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Active Backlogs</label>
+        {{ form.backlogs }}
+      </div>
+
+      <div class="col-12">
+        <label class="form-label fw-semibold">Technical Skills (Comma Separated)</label>
+        {{ form.skills }}
+      </div>
+
+      <div class="col-12">
+        <label class="form-label fw-semibold">Certifications</label>
+        {{ form.certifications }}
+      </div>
+
+      <div class="col-12">
+        <label class="form-label fw-semibold">Key Projects</label>
+        {{ form.projects }}
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">LinkedIn Profile URL</label>
+        {{ form.linkedin_url }}
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">GitHub Profile URL</label>
+        {{ form.github_url }}
+      </div>
+
+      <div class="col-12">
+        <label class="form-label fw-semibold">Upload Resume (PDF/DOC)</label>
+        {{ form.resume }}
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+      <a href="{% if user.is_staff %}{% url 'student_list' %}{% else %}{% url 'my_profile' %}{% endif %}" class="btn btn-light border px-4 fw-medium">Cancel</a>
+      <button type="submit" class="btn btn-primary px-4 fw-bold shadow-sm">Save Changes</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

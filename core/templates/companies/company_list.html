@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}Companies - Placement Drive Management System{% endblock %}
+{% block page_title %}Companies{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+  <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary btn-sm px-3 fw-semibold">
+    <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+  </a>
+</div>
+
+<!-- Header Bar with Add Button & Search -->
+<div class="card p-3 mb-4">
+  <div class="row g-3 align-items-center justify-content-between">
+    <div class="col-md-6">
+      <form method="get" action="{% url 'company_list' %}" class="input-group">
+        <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+        <input type="text" name="q" value="{{ search_query }}" class="form-control border-start-0 ps-0" placeholder="Search company by name, industry, location...">
+        <button type="submit" class="btn btn-outline-secondary">Search</button>
+      </form>
+    </div>
+
+    {% if user.is_staff %}
+    <div class="col-md-auto">
+      <a href="{% url 'add_company' %}" class="btn btn-primary fw-semibold">
+        <i class="bi bi-plus-lg me-1"></i> Add Company
+      </a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Companies Table (Matching Screen 7) -->
+<div class="card p-3">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle m-0">
+      <thead class="table-light">
+        <tr>
+          <th>Company Name</th>
+          <th>Industry</th>
+          <th>Location</th>
+          <th>Website</th>
+          <th>Total Drives</th>
+          {% if user.is_staff %}
+          <th>Actions</th>
+          {% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for company in companies %}
+        <tr>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              {% if company.logo %}
+                <img src="{{ company.logo.url }}" alt="{{ company.name }}" class="rounded-3 border" style="width: 38px; height: 38px; object-fit: contain;">
+              {% else %}
+                <div class="bg-primary bg-opacity-10 text-primary fw-bold rounded-3 p-2 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+                  {{ company.name|slice:":2"|upper }}
+                </div>
+              {% endif %}
+              <div>
+                <div class="fw-bold text-dark mb-0">{{ company.name }}</div>
+                <div class="small text-muted">{{ company.contact_person|default:"Contact Person N/A" }}</div>
+              </div>
+            </div>
+          </td>
+          <td class="text-dark fw-medium">{{ company.industry }}</td>
+          <td><span class="badge bg-light text-dark border">{{ company.location }}</span></td>
+          <td>
+            {% if company.website %}
+              <a href="{{ company.website }}" target="_blank" class="text-primary text-decoration-none small">
+                <i class="bi bi-box-arrow-up-right me-1"></i> {{ company.website|truncatechars:20 }}
+              </a>
+            {% else %}
+              <span class="text-muted small">N/A</span>
+            {% endif %}
+          </td>
+          <td class="fw-bold text-primary">{{ company.drives_count }}</td>
+          {% if user.is_staff %}
+          <td>
+            <div class="d-flex gap-2">
+              <a href="{% url 'edit_company' company.pk %}" class="btn btn-sm btn-outline-secondary" title="Edit">
+                <i class="bi bi-pencil"></i>
+              </a>
+              <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-bs-delete-url="{% url 'delete_company' company.pk %}" data-bs-item-name="{{ company.name }}">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </td>
+          {% endif %}
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="{% if user.is_staff %}6{% else %}5{% endif %}" class="text-center text-muted py-4">No companies found.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

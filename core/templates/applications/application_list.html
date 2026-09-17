@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+
+{% block title %}Applications - Placement Drive Management System{% endblock %}
+{% block page_title %}Applications Tracker{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+  <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary btn-sm px-3 fw-semibold">
+    <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+  </a>
+</div>
+
+<!-- Search & Filter Bar -->
+<div class="card p-3 mb-4">
+  <form method="get" action="{% url 'application_list' %}" class="row g-3 align-items-center">
+    <div class="col-md-4">
+      <div class="input-group">
+        <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+        <input type="text" name="q" value="{{ search_query }}" class="form-control border-start-0 ps-0" placeholder="Search by student name or role...">
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <select name="company" class="form-select">
+        <option value="">All Companies</option>
+        {% for comp in companies %}
+          <option value="{{ comp.pk }}" {% if company_id == comp.pk|stringformat:"s" %}selected{% endif %}>{{ comp.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="col-md-3">
+      <select name="status" class="form-select">
+        <option value="">All Status</option>
+        <option value="Pending" {% if status_filter == 'Pending' %}selected{% endif %}>Pending</option>
+        <option value="Shortlisted" {% if status_filter == 'Shortlisted' %}selected{% endif %}>Shortlisted</option>
+        <option value="Selected" {% if status_filter == 'Selected' %}selected{% endif %}>Selected</option>
+        <option value="Rejected" {% if status_filter == 'Rejected' %}selected{% endif %}>Rejected</option>
+      </select>
+    </div>
+
+    <div class="col-md-2">
+      <div class="d-flex flex-column gap-2">
+        <button type="submit" class="btn btn-primary w-100 fw-semibold">
+          <i class="bi bi-funnel me-1"></i> Filter
+        </button>
+        <div class="btn-group w-100 shadow-sm">
+          <a href="{% url 'export_applications_csv' %}?{{ request.GET.urlencode }}" class="btn btn-success btn-sm fw-semibold d-flex align-items-center justify-content-center gap-1 text-nowrap" id="download-student-csv" title="Download all student applications in CSV file format">
+            <i class="bi bi-file-earmark-arrow-down-fill"></i> Download CSV
+          </a>
+          <button type="button" class="btn btn-success btn-sm dropdown-toggle dropdown-toggle-split px-2" data-bs-toggle="dropdown" aria-expanded="false" title="More export options">
+            <span class="visually-hidden">Toggle Dropdown</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+            <li>
+              <a class="dropdown-item small d-flex align-items-center gap-2" href="{% url 'export_applications_csv' %}?{{ request.GET.urlencode }}">
+                <i class="bi bi-file-earmark-spreadsheet text-success"></i> Download Current Filtered List
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item small d-flex align-items-center gap-2" href="{% url 'export_applications_csv' %}?all=1">
+                <i class="bi bi-file-earmark-check text-primary"></i> Download All Applications (CSV)
+              </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <a class="dropdown-item small d-flex align-items-center gap-2" href="{% url 'export_students_csv' %}?all=1">
+                <i class="bi bi-people-fill text-info"></i> Download All Students Directory (CSV)
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- Applications Table (Matching Screen 13) -->
+<div class="card p-3">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex align-items-center gap-2">
+      <h6 class="fw-bold text-dark m-0">All Applications ({{ applications|length }})</h6>
+      {% if search_query or company_id or status_filter %}
+        <span class="badge bg-light text-muted border fw-normal">Filtered</span>
+        <a href="{% url 'application_list' %}" class="small text-danger text-decoration-none ms-1">
+          <i class="bi bi-x-circle me-1"></i>Clear Filter
+        </a>
+      {% endif %}
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle m-0">
+      <thead class="table-light">
+        <tr>
+          <th>Student Name</th>
+          <th>Company</th>
+          <th>Job Role</th>
+          <th>Applied Date</th>
+          <th>Status</th>
+          <th>Action / Update Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for app in applications %}
+        <tr>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 34px; height: 34px; font-size: 0.85rem;">
+                {{ app.student.user.first_name|default:app.student.user.username|slice:":1"|upper }}
+              </div>
+              <div>
+                <a href="{% url 'student_profile_pk' app.student.pk %}" class="fw-bold text-dark text-decoration-none mb-0">
+                  {{ app.student.user.get_full_name|default:app.student.user.username }}
+                </a>
+                <div class="small text-muted">{{ app.student.department }} (CGPA: {{ app.student.cgpa }})</div>
+              </div>
+            </div>
+          </td>
+          <td class="fw-semibold text-dark">{{ app.drive.company.name }}</td>
+          <td>{{ app.drive.title }}</td>
+          <td class="small text-muted">{{ app.applied_date|date:"d M Y" }}</td>
+          <td>
+            {% if app.status == 'Pending' %}
+              <span class="badge badge-status badge-pending">Pending</span>
+            {% elif app.status == 'Shortlisted' %}
+              <span class="badge badge-status badge-shortlisted">Shortlisted</span>
+            {% elif app.status == 'Selected' %}
+              <span class="badge badge-status badge-selected">Selected</span>
+            {% else %}
+              <span class="badge badge-status badge-rejected">Rejected</span>
+            {% endif %}
+          </td>
+          <td>
+            <!-- Quick Status Change Form -->
+            <form method="post" action="{% url 'update_application_status' app.pk %}" class="d-flex gap-2 align-items-center">
+              {% csrf_token %}
+              <select name="status" class="form-select form-select-sm" style="width: 130px;">
+                <option value="Pending" {% if app.status == 'Pending' %}selected{% endif %}>Pending</option>
+                <option value="Shortlisted" {% if app.status == 'Shortlisted' %}selected{% endif %}>Shortlisted</option>
+                <option value="Selected" {% if app.status == 'Selected' %}selected{% endif %}>Selected</option>
+                <option value="Rejected" {% if app.status == 'Rejected' %}selected{% endif %}>Rejected</option>
+              </select>
+              <button type="submit" class="btn btn-sm btn-primary py-1 px-2" title="Save Status">
+                <i class="bi bi-check-lg"></i>
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" class="text-center text-muted py-4">No student applications found.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

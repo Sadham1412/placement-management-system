@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}My Applications - Placement Drive Management System{% endblock %}
+{% block page_title %}My Applications{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+  <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary btn-sm px-3 fw-semibold">
+    <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+  </a>
+</div>
+
+<div class="card p-3">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h6 class="fw-bold text-dark m-0">Submitted Applications ({{ applications|length }})</h6>
+    <a href="{% url 'drive_list' %}" class="btn btn-sm btn-outline-primary fw-semibold">Browse More Drives</a>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-hover align-middle m-0">
+      <thead class="table-light">
+        <tr>
+          <th>Company</th>
+          <th>Job Role</th>
+          <th>Applied Date</th>
+          <th>Status</th>
+          <th>Remarks</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for app in applications %}
+        <tr>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <div class="bg-primary bg-opacity-10 text-primary fw-bold rounded-3 p-2 d-flex align-items-center justify-content-center" style="width: 34px; height: 34px;">
+                {{ app.drive.company.name|slice:":2"|upper }}
+              </div>
+              <div class="fw-bold text-dark mb-0">{{ app.drive.company.name }}</div>
+            </div>
+          </td>
+          <td class="fw-semibold text-dark">{{ app.drive.title }}</td>
+          <td class="small text-muted">{{ app.applied_date|date:"d M Y" }}</td>
+          <td>
+            {% if app.status == 'Pending' %}
+              <span class="badge badge-status badge-pending">Pending</span>
+            {% elif app.status == 'Shortlisted' %}
+              <span class="badge badge-status badge-shortlisted">Shortlisted</span>
+            {% elif app.status == 'Selected' %}
+              <span class="badge badge-status badge-selected">Selected</span>
+            {% else %}
+              <span class="badge badge-status badge-rejected">Rejected</span>
+            {% endif %}
+          </td>
+          <td class="small text-muted">{{ app.remarks|default:"--" }}</td>
+          <td>
+            <a href="{% url 'drive_detail' app.drive.pk %}" class="btn btn-sm btn-primary px-3">
+              View Drive
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" class="text-center text-muted py-4">You have not applied to any placement drives yet.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

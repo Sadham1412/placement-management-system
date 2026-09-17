@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block title %}Students - Placement Drive Management System{% endblock %}
+{% block page_title %}Students Management{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+  <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary btn-sm px-3 fw-semibold">
+    <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+  </a>
+</div>
+
+<div class="card p-3 mb-4">
+  <!-- Search & Filter Controls -->
+  <form method="get" action="{% url 'student_list' %}" class="row g-3 align-items-center">
+    <div class="col-md-4">
+      <div class="input-group">
+        <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+        <input type="text" name="q" value="{{ search_query }}" class="form-control border-start-0 ps-0" placeholder="Search student by name, email, username...">
+      </div>
+    </div>
+    
+    <div class="col-md-3">
+      <select name="department" class="form-select">
+        <option value="">All Departments</option>
+        <option value="CSE" {% if dept_filter == 'CSE' %}selected{% endif %}>CSE</option>
+        <option value="IT" {% if dept_filter == 'IT' %}selected{% endif %}>IT</option>
+        <option value="ECE" {% if dept_filter == 'ECE' %}selected{% endif %}>ECE</option>
+        <option value="MCA" {% if dept_filter == 'MCA' %}selected{% endif %}>MCA</option>
+        <option value="ME" {% if dept_filter == 'ME' %}selected{% endif %}>ME</option>
+        <option value="CE" {% if dept_filter == 'CE' %}selected{% endif %}>CE</option>
+      </select>
+    </div>
+
+    <div class="col-md-3">
+      <input type="number" step="0.1" name="min_cgpa" value="{{ min_cgpa }}" class="form-control" placeholder="Min CGPA (e.g. 7.5)">
+    </div>
+
+    <div class="col-md-2">
+      <div class="d-flex flex-column gap-2">
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary w-100 fw-semibold">
+            <i class="bi bi-funnel me-1"></i> Filter
+          </button>
+          <a href="{% url 'student_list' %}" class="btn btn-light border fw-semibold" title="Reset Filters"><i class="bi bi-arrow-counterclockwise"></i></a>
+        </div>
+        <div class="btn-group w-100 shadow-sm">
+          <a href="{% url 'export_students_csv' %}?{{ request.GET.urlencode }}" class="btn btn-success btn-sm fw-semibold d-flex align-items-center justify-content-center gap-1 text-nowrap" id="download-students-csv" title="Download all student list in CSV format">
+            <i class="bi bi-file-earmark-arrow-down-fill"></i> Download CSV
+          </a>
+          <button type="button" class="btn btn-success btn-sm dropdown-toggle dropdown-toggle-split px-2" data-bs-toggle="dropdown" aria-expanded="false" title="More options">
+            <span class="visually-hidden">Toggle Dropdown</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+            <li>
+              <a class="dropdown-item small d-flex align-items-center gap-2" href="{% url 'export_students_csv' %}?{{ request.GET.urlencode }}">
+                <i class="bi bi-file-earmark-spreadsheet text-success"></i> Download Filtered Students
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item small d-flex align-items-center gap-2" href="{% url 'export_students_csv' %}?all=1">
+                <i class="bi bi-people-fill text-primary"></i> Download All Students (Full Directory)
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- Student Table -->
+<div class="card p-3">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex align-items-center gap-2">
+      <h6 class="fw-bold text-dark m-0">Student Directory ({{ students|length }})</h6>
+      {% if search_query or dept_filter or min_cgpa %}
+        <span class="badge bg-light text-muted border fw-normal">Filtered</span>
+        <a href="{% url 'student_list' %}" class="small text-danger text-decoration-none ms-1">
+          <i class="bi bi-x-circle me-1"></i>Clear Filter
+        </a>
+      {% endif %}
+    </div>
+    <a href="{% url 'export_students_csv' %}?{{ request.GET.urlencode }}" class="btn btn-outline-success btn-sm fw-semibold shadow-sm d-flex align-items-center gap-1">
+      <i class="bi bi-download"></i> Export CSV
+    </a>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-hover align-middle m-0">
+      <thead class="table-light">
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Department</th>
+          <th>Year</th>
+          <th>CGPA</th>
+          <th>Backlogs</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for student in students %}
+        <tr>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 34px; height: 34px; font-size: 0.85rem;">
+                {{ student.user.first_name|default:student.user.username|slice:":1"|upper }}
+              </div>
+              <div>
+                <div class="fw-bold text-dark mb-0">{{ student.user.get_full_name|default:student.user.username }}</div>
+                <div class="small text-muted">{{ student.phone|default:"No phone" }}</div>
+              </div>
+            </div>
+          </td>
+          <td class="small text-dark">{{ student.user.email }}</td>
+          <td><span class="badge bg-secondary bg-opacity-10 text-secondary fw-semibold">{{ student.department }}</span></td>
+          <td>{{ student.graduation_year }}</td>
+          <td class="fw-bold text-primary">{{ student.cgpa }}</td>
+          <td>
+            {% if student.backlogs == 0 %}
+              <span class="badge bg-success bg-opacity-10 text-success">0</span>
+            {% else %}
+              <span class="badge bg-danger bg-opacity-10 text-danger">{{ student.backlogs }}</span>
+            {% endif %}
+          </td>
+          <td>
+            <div class="d-flex gap-2">
+              <a href="{% url 'student_profile_pk' student.pk %}" class="btn btn-sm btn-outline-primary" title="View Profile">
+                <i class="bi bi-eye"></i>
+              </a>
+              <a href="{% url 'edit_student' student.pk %}" class="btn btn-sm btn-outline-secondary" title="Edit Student">
+                <i class="bi bi-pencil"></i>
+              </a>
+              <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-bs-delete-url="{% url 'delete_student' student.pk %}" data-bs-item-name="{{ student.user.get_full_name|default:student.user.username }}">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7" class="text-center text-muted py-4">No students found matching your criteria.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

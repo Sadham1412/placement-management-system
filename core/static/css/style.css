@@ -1,0 +1,184 @@
+/* Custom CSS for Placement Drive Management System */
+:root {
+  --navy-sidebar-bg: #0f172a;
+  --navy-sidebar-hover: #1e293b;
+  --navy-sidebar-active: #2563eb;
+  --navy-sidebar-text: #94a3b8;
+  --navy-sidebar-text-active: #ffffff;
+  --bg-light: #f8fafc;
+  --card-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-light);
+  color: #334155;
+  min-height: 100vh;
+}
+
+/* Sidebar Styling */
+#sidebar {
+  width: 260px;
+  background-color: var(--navy-sidebar-bg);
+  min-height: 100vh;
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+#sidebar .sidebar-brand {
+  padding: 1.5rem 1.25rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+#sidebar .nav-link {
+  color: var(--navy-sidebar-text);
+  padding: 0.75rem 1.25rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  border-radius: 0.5rem;
+  margin: 0.25rem 0.75rem;
+  transition: all 0.2s ease;
+}
+
+#sidebar .nav-link:hover {
+  color: #ffffff;
+  background-color: var(--navy-sidebar-hover);
+}
+
+#sidebar .nav-link.active {
+  color: var(--navy-sidebar-text-active);
+  background-color: var(--navy-sidebar-active);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+#sidebar .nav-link i {
+  font-size: 1.15rem;
+}
+
+/* Layout Content Wrapper */
+#content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* Header Navbar */
+.top-navbar {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 0.75rem 1.5rem;
+}
+
+/* Card Improvements */
+.card {
+  border: none;
+  border-radius: 0.75rem;
+  box-shadow: var(--card-shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+/* Stat KPI Icon Containers */
+.icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+}
+
+.icon-box.primary { background-color: #eff6ff; color: #2563eb; }
+.icon-box.info { background-color: #ecfeff; color: #06b6d4; }
+.icon-box.warning { background-color: #fffbeb; color: #f59e0b; }
+.icon-box.purple { background-color: #f3e8ff; color: #9333ea; }
+.icon-box.success { background-color: #f0fdf4; color: #16a34a; }
+.icon-box.danger { background-color: #fef2f2; color: #dc2626; }
+
+/* Status Badges */
+.badge-status {
+  padding: 0.4em 0.8em;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 50rem;
+}
+
+.badge-pending { background-color: #fef3c7; color: #92400e; }
+.badge-shortlisted { background-color: #e0f2fe; color: #075985; }
+.badge-selected { background-color: #dcfce7; color: #166534; }
+.badge-rejected { background-color: #fee2e2; color: #991b1b; }
+.badge-active { background-color: #dcfce7; color: #15803d; }
+.badge-upcoming { background-color: #e0f2fe; color: #0369a1; }
+.badge-closed { background-color: #f1f5f9; color: #64748b; }
+
+/* Landing Page Hero */
+.hero-section {
+  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+  color: #ffffff;
+  padding: 4rem 1.5rem;
+  border-radius: 1rem;
+}
+
+/* Modals */
+.modal-content {
+  border-radius: 0.75rem;
+  border: none;
+}
+
+/* Utility & Hover Effects */
+.cursor-pointer { cursor: pointer; }
+.hover-bg-light:hover { background-color: #f1f5f9; }
+.shadow-xs { box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+
+.card-hover {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.03) !important;
+}
+
+.btn-primary {
+  background-color: #2563eb;
+  border-color: #2563eb;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background-color: #1d4ed8;
+  border-color: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.backdrop-blur {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Mobile Responsive Sidebar Toggle */
+@media (max-width: 991.98px) {
+  #sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: -260px;
+  }
+  #sidebar.show {
+    left: 0;
+  }
+}

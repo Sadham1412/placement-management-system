@@ -2,7 +2,7 @@ services:
   - type: web
     name: placement-management-system
     runtime: python
-    buildCommand: "./build.sh"
+    buildCommand: "bash build.sh"
     startCommand: "gunicorn placement_system.wsgi:application"
     envVars:
       - key: DJANGO_SECRET_KEY

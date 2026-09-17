@@ -2,6 +2,7 @@ services:
   - type: web
     name: placement-management-system
     runtime: python
+    plan: free
     buildCommand: "bash build.sh"
     startCommand: "gunicorn placement_system.wsgi:application"
     envVars:

@@ -3,7 +3,7 @@ services:
     name: placement-management-system
     runtime: python
     plan: free
-    buildCommand: "bash build.sh"
+    buildCommand: "pip install -r requirements.txt && bash build.sh"
     startCommand: "gunicorn placement_system.wsgi:application"
     envVars:
       - key: DJANGO_SECRET_KEY
